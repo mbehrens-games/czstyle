@@ -60,13 +60,11 @@ typedef struct voice
   short lfo_delay_cycles[VOICE_NUM_LFOS];
 
   unsigned int lfo_phase[VOICE_NUM_LFOS];
-  unsigned int lfo_increment[VOICE_NUM_LFOS];
 
   /* midi controller positions */
   short pitch_wheel_pos;
   short vibrato_wheel_pos;
   short tremolo_wheel_pos;
-  short boost_wheel_pos;
   short note_velocity_pos;
 
   /* output level */
@@ -82,7 +80,7 @@ short int voice_reset_all();
 short int voice_load_patch( short voice_index, 
                             short cart_index, short patch_index);
 
-short int voice_note_on(short voice_index, short midi_note);
+short int voice_note_on(short voice_index, short midi_note, short velocity);
 short int voice_note_off(short voice_index);
 
 short int voice_update_all();

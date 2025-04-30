@@ -24,7 +24,7 @@ static short S_waveform_test_buffer[TEST_BUFFER_SIZE];
 /*******************************************************************************
 ** play_note()
 *******************************************************************************/
-short int play_midi_note(int note)
+short int play_midi_note(int note, short velocity)
 {
   int k;
 
@@ -34,7 +34,7 @@ short int play_midi_note(int note)
   v = &G_voice_bank[0];
 
   /* trigger the note */
-  voice_note_on(0, note);
+  voice_note_on(0, note, velocity);
 
   /* reset sample buffer */
   for (k = 0; k < TEST_BUFFER_SIZE; k++)
@@ -236,6 +236,10 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_SAW;
   p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
 
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
   p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
   p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
   p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
@@ -249,7 +253,7 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
 
   /* midi note 60 is C-4 */
-  play_midi_note(60);
+  play_midi_note(60, 96);
   export_buffer("saw_sweep.wav");
 
   /* square sweep */
@@ -259,6 +263,10 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_SQUARE;
   p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
 
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_SQUARE;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_SQUARE;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
   p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
   p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
   p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
@@ -271,7 +279,7 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
   p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
 
-  play_midi_note(60);
+  play_midi_note(60, 96);
   export_buffer("square_sweep.wav");
 
   /* pulse sweep */
@@ -281,6 +289,10 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_PULSE;
   p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
 
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_PULSE;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_PULSE;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
   p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
   p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
   p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
@@ -293,7 +305,7 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
   p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
 
-  play_midi_note(60);
+  play_midi_note(60, 96);
   export_buffer("pulse_sweep.wav");
 
   /* double sine */
@@ -303,6 +315,10 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_DOUBLE_SINE;
   p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
 
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_DOUBLE_SINE;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_DOUBLE_SINE;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
   p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
   p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
   p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
@@ -315,7 +331,7 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
   p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
 
-  play_midi_note(60);
+  play_midi_note(60, 96);
   export_buffer("double_sine.wav");
 
   /* half saw */
@@ -325,6 +341,10 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_HALF_SAW;
   p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
 
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_HALF_SAW;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_HALF_SAW;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
   p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
   p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
   p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
@@ -337,7 +357,7 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
   p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
 
-  play_midi_note(60);
+  play_midi_note(60, 96);
   export_buffer("half_saw.wav");
 
   /* saw - pulse */
@@ -347,6 +367,10 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_PULSE;
   p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
 
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_PULSE;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
   p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
   p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
   p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
@@ -359,7 +383,7 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
   p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
 
-  play_midi_note(60);
+  play_midi_note(60, 96);
   export_buffer("saw_pulse_swap.wav");
 
   /* saw - resonance */
@@ -369,6 +393,10 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_RESONANCE_SAW;
   p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
 
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_RESONANCE_SAW;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
   p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
   p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
   p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
@@ -381,7 +409,7 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
   p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
 
-  play_midi_note(60);
+  play_midi_note(60, 96);
   export_buffer("saw_resonance.wav");
 
   /* square - resonance */
@@ -391,6 +419,10 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_RESONANCE_TRAPEZOID;
   p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
 
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_SQUARE;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_RESONANCE_TRAPEZOID;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
   p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
   p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
   p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
@@ -403,7 +435,7 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
   p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
 
-  play_midi_note(60);
+  play_midi_note(60, 96);
   export_buffer("square_resonance.wav");
 
   /* pulse - resonance */
@@ -413,6 +445,10 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_RESONANCE_TRIANGLE;
   p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
 
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_PULSE;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_RESONANCE_TRIANGLE;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
   p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
   p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
   p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
@@ -425,9 +461,162 @@ int main(int argc, char *argv[])
   p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
   p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
 
-  play_midi_note(60);
+  play_midi_note(60, 96);
   export_buffer("pulse_resonance.wav");
 
+  /* wave mixing */
+  cart_reset_patch(0, 0);
+
+  p->values[PATCH_PARAM_LINE_1_WAVE_1] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
+
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_SQUARE;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_SQUARE;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
+  p->values[PATCH_PARAM_OUTPUT_MIX]       = 35;
+
+  p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
+  p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
+  p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
+  p->values[PATCH_PARAM_AMP_ENV_HOLD]     = 75;
+  p->values[PATCH_PARAM_AMP_ENV_SUSTAIN]  = 90;
+
+  p->values[PATCH_PARAM_BEND_ENV_ATTACK]  = 0;
+  p->values[PATCH_PARAM_BEND_ENV_DECAY]   = 30;
+  p->values[PATCH_PARAM_BEND_ENV_RELEASE] = 50;
+  p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
+  p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
+
+  play_midi_note(60, 96);
+  export_buffer("wave_mixing.wav");
+
+  /* unison saw */
+  cart_reset_patch(0, 0);
+
+  p->values[PATCH_PARAM_LINE_1_WAVE_1] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
+
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
+  p->values[PATCH_PARAM_OUTPUT_MIX]       = 50;
+  p->values[PATCH_PARAM_UNISON_DETUNE]    = 60;
+
+  p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
+  p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
+  p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
+  p->values[PATCH_PARAM_AMP_ENV_HOLD]     = 75;
+  p->values[PATCH_PARAM_AMP_ENV_SUSTAIN]  = 90;
+
+  p->values[PATCH_PARAM_BEND_ENV_ATTACK]  = 0;
+  p->values[PATCH_PARAM_BEND_ENV_DECAY]   = 30;
+  p->values[PATCH_PARAM_BEND_ENV_RELEASE] = 50;
+  p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
+  p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
+
+  play_midi_note(60, 96);
+  export_buffer("unison_saw.wav");
+
+  /* ring modulation */
+  cart_reset_patch(0, 0);
+
+  p->values[PATCH_PARAM_LINE_1_WAVE_1] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
+
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_SQUARE;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_SQUARE;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+  p->values[PATCH_PARAM_LINE_2_OCTAVE]    = 4;
+  p->values[PATCH_PARAM_LINE_2_DETUNE]    = 60;
+
+  p->values[PATCH_PARAM_OUTPUT_RING_MOD]  = PATCH_RING_MOD_VAL_ON;
+  p->values[PATCH_PARAM_OUTPUT_MIX]       = 50;
+
+  p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
+  p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
+  p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
+  p->values[PATCH_PARAM_AMP_ENV_HOLD]     = 75;
+  p->values[PATCH_PARAM_AMP_ENV_SUSTAIN]  = 90;
+
+  p->values[PATCH_PARAM_BEND_ENV_ATTACK]  = 0;
+  p->values[PATCH_PARAM_BEND_ENV_DECAY]   = 30;
+  p->values[PATCH_PARAM_BEND_ENV_RELEASE] = 50;
+  p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
+  p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
+
+  play_midi_note(60, 96);
+  export_buffer("ring_mod_saw_square.wav");
+
+  /* vibrato saw */
+  cart_reset_patch(0, 0);
+
+  p->values[PATCH_PARAM_LINE_1_WAVE_1] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
+
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_SAW;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
+  p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
+  p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
+  p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
+  p->values[PATCH_PARAM_AMP_ENV_HOLD]     = 75;
+  p->values[PATCH_PARAM_AMP_ENV_SUSTAIN]  = 90;
+
+  p->values[PATCH_PARAM_BEND_ENV_ATTACK]  = 0;
+  p->values[PATCH_PARAM_BEND_ENV_DECAY]   = 30;
+  p->values[PATCH_PARAM_BEND_ENV_RELEASE] = 50;
+  p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
+  p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
+
+  p->values[PATCH_PARAM_VIBRATO_POLARITY]     = PATCH_VIBRATO_POLARITY_VAL_BI;
+  p->values[PATCH_PARAM_VIBRATO_WAVEFORM]     = PATCH_LFO_WAVEFORM_VAL_TRIANGLE;
+  p->values[PATCH_PARAM_VIBRATO_DELAY]        = 0;
+  p->values[PATCH_PARAM_VIBRATO_SPEED]        = 50;
+  p->values[PATCH_PARAM_VIBRATO_DEPTH]        = 99;
+  p->values[PATCH_PARAM_VIBRATO_SENSITIVITY]  = 10;
+
+  play_midi_note(60, 96);
+  export_buffer("vibrato_saw.wav");
+
+  /* tremolo square */
+  cart_reset_patch(0, 0);
+
+  p->values[PATCH_PARAM_LINE_1_WAVE_1] = PATCH_WAVE_VAL_SQUARE;
+  p->values[PATCH_PARAM_LINE_1_WAVE_2] = PATCH_WAVE_VAL_SQUARE;
+  p->values[PATCH_PARAM_LINE_1_BEND_MAX]  = 99;
+
+  p->values[PATCH_PARAM_LINE_2_WAVE_1] = PATCH_WAVE_VAL_SQUARE;
+  p->values[PATCH_PARAM_LINE_2_WAVE_2] = PATCH_WAVE_VAL_SQUARE;
+  p->values[PATCH_PARAM_LINE_2_BEND_MAX]  = 99;
+
+  p->values[PATCH_PARAM_AMP_ENV_ATTACK]   = 0;
+  p->values[PATCH_PARAM_AMP_ENV_DECAY]    = 70;
+  p->values[PATCH_PARAM_AMP_ENV_RELEASE]  = 50;
+  p->values[PATCH_PARAM_AMP_ENV_HOLD]     = 75;
+  p->values[PATCH_PARAM_AMP_ENV_SUSTAIN]  = 90;
+
+  p->values[PATCH_PARAM_BEND_ENV_ATTACK]  = 0;
+  p->values[PATCH_PARAM_BEND_ENV_DECAY]   = 30;
+  p->values[PATCH_PARAM_BEND_ENV_RELEASE] = 50;
+  p->values[PATCH_PARAM_BEND_ENV_HOLD]    = 50;
+  p->values[PATCH_PARAM_BEND_ENV_SUSTAIN] = 70;
+
+  p->values[PATCH_PARAM_TREMOLO_MODE]         = PATCH_TREMOLO_MODE_VAL_AMP;
+  p->values[PATCH_PARAM_TREMOLO_WAVEFORM]     = PATCH_LFO_WAVEFORM_VAL_TRIANGLE;
+  p->values[PATCH_PARAM_TREMOLO_DELAY]        = 0;
+  p->values[PATCH_PARAM_TREMOLO_SPEED]        = 50;
+  p->values[PATCH_PARAM_TREMOLO_DEPTH]        = 99;
+  p->values[PATCH_PARAM_TREMOLO_SENSITIVITY]  = 25;
+
+  play_midi_note(60, 96);
+  export_buffer("tremolo_square.wav");
 
   return 0;
 }
