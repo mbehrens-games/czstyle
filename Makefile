@@ -1,6 +1,6 @@
-CC = clang
+CC = gcc
 CFLAGS = -pedantic -Wall -Wextra -std=c90 -m64 -O2
-LDFLAGS = -F/Library/Frameworks -framework SDL2 -W1,--strip-all
+LDFLAGS = -ldl -lm 
 
 TARGET = czstyle
 
