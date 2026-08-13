@@ -2,12 +2,12 @@ clear;
 clc;
 
 % chip clock: 48 khz
-% out clock:  24 khz
+%  out clock: 24 khz
 
 % db to linear table
 db_to_lin = round(32768 * exp(-1 * log(2) * (0:255)/256));
 
-% output staging (filters)
+% filters
 fs = 48000;
 hp_fc = 27.5 / (fs / 2);
 lp_fc =  10500 / (fs / 2);
