@@ -185,18 +185,18 @@ enum
 };
 
 /* phase tables */
-#define APU_VCA_PHASE_NUM_BLOCKS 12
-#define APU_VCA_PHASE_TABLE_SIZE 16
+#define APU_VCA_PITCH_NUM_BLOCKS 12
+#define APU_VCA_PITCH_TABLE_SIZE 16
 
-#define APU_VCA_PHASE_MAX_INDEX  ((12 * 16) - 1)
+#define APU_VCA_PITCH_MAX_INDEX  ((12 * 16) - 1)
 
-static unsigned short S_apu_vca_phase_shifts_table[APU_VCA_PHASE_NUM_BLOCKS] = 
-  { 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1,  0 };
+static unsigned short S_apu_vca_phase_shifts_table[APU_VCA_PITCH_NUM_BLOCKS] = 
+  { 10,  9,  8,  7,  6,  5,  4,  3,  2,  1,  0,  0 };
 
-static unsigned short S_apu_vca_phase_steps_table[APU_VCA_PHASE_NUM_BLOCKS] = 
-  {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1 };
+static unsigned short S_apu_vca_phase_steps_table[APU_VCA_PITCH_NUM_BLOCKS] = 
+  {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2 };
 
-static unsigned short S_apu_vca_phase_incs_table[APU_VCA_PHASE_TABLE_SIZE] = 
+static unsigned short S_apu_vca_phase_incs_table[APU_VCA_PITCH_TABLE_SIZE] = 
   { 29127, 30417, 31763, 33170, 34638, 36172, 37773, 39446,
     41192, 43016, 44920, 46909, 48986, 51155, 53419, 55784
   };
@@ -237,100 +237,141 @@ static unsigned short S_apu_vca_rise_curve_table[256] =
       10,    9,    7,    6,    4,    3,    1,    0
   };
 
-/* fall curve multiplier (4 bit mantissa) */
-#define APU_VCA_FALL_CURVE_MULT 257
-
-/* sustain index table */
-static unsigned short S_apu_vca_sustain_index_table[100] = 
-  {   1,   1,   2,   3,   3,   4,   4,   5,   6,   6,
-      7,   8,   8,   9,  10,  10,  11,  12,  12,  13,
-     13,  14,  15,  15,  16,  17,  17,  18,  19,  19,
-     20,  20,  21,  22,  22,  23,  24,  24,  25,  26,
-     26,  27,  28,  28,  29,  29,  30,  31,  31,  32,
-     33,  33,  34,  35,  35,  36,  36,  37,  38,  38,
-     39,  40,  40,  41,  42,  42,  43,  44,  44,  45,
-     45,  46,  47,  47,  48,  49,  49,  50,  51,  51,
-     52,  52,  53,  54,  54,  55,  56,  56,  57,  58,
-     58,  59,  60,  60,  61,  61,  62,  63,  63,  64
+static unsigned short S_apu_vca_fall_curve_table[256] = 
+  { 4095, 4079, 4063, 4047, 4031, 4015, 3999, 3983,
+    3967, 3950, 3934, 3918, 3902, 3886, 3870, 3854,
+    3838, 3822, 3806, 3790, 3774, 3758, 3742, 3726,
+    3710, 3694, 3677, 3661, 3645, 3629, 3613, 3597,
+    3581, 3565, 3549, 3533, 3517, 3501, 3485, 3469,
+    3453, 3437, 3421, 3404, 3388, 3372, 3356, 3340,
+    3324, 3308, 3292, 3276, 3260, 3244, 3228, 3212,
+    3196, 3180, 3164, 3148, 3131, 3115, 3099, 3083,
+    3067, 3051, 3035, 3019, 3003, 2987, 2971, 2955,
+    2939, 2923, 2907, 2891, 2875, 2858, 2842, 2826,
+    2810, 2794, 2778, 2762, 2746, 2730, 2714, 2698,
+    2682, 2666, 2650, 2634, 2618, 2602, 2585, 2569,
+    2553, 2537, 2521, 2505, 2489, 2473, 2457, 2441,
+    2425, 2409, 2393, 2377, 2361, 2345, 2329, 2312,
+    2296, 2280, 2264, 2248, 2232, 2216, 2200, 2184,
+    2168, 2152, 2136, 2120, 2104, 2088, 2072, 2056,
+    2039, 2023, 2007, 1991, 1975, 1959, 1943, 1927,
+    1911, 1895, 1879, 1863, 1847, 1831, 1815, 1799,
+    1783, 1766, 1750, 1734, 1718, 1702, 1686, 1670,
+    1654, 1638, 1622, 1606, 1590, 1574, 1558, 1542,
+    1526, 1510, 1493, 1477, 1461, 1445, 1429, 1413,
+    1397, 1381, 1365, 1349, 1333, 1317, 1301, 1285,
+    1269, 1253, 1237, 1220, 1204, 1188, 1172, 1156,
+    1140, 1124, 1108, 1092, 1076, 1060, 1044, 1028,
+    1012,  996,  980,  964,  947,  931,  915,  899,
+     883,  867,  851,  835,  819,  803,  787,  771,
+     755,  739,  723,  707,  691,  674,  658,  642,
+     626,  610,  594,  578,  562,  546,  530,  514,
+     498,  482,  466,  450,  434,  418,  401,  385,
+     369,  353,  337,  321,  305,  289,  273,  257,
+     241,  225,  209,  193,  177,  161,  145,  128,
+     112,   96,   80,   64,   48,   32,   16,    0
   };
 
 /* rise <-> fall remap tables */
 static unsigned short S_apu_vca_fall_to_rise_remap_table[256] = 
-  { 255, 244, 234, 224, 214, 205, 197, 188,
-    180, 172, 165, 158, 151, 145, 139, 133,
-    127, 122, 117, 112, 107, 102,  98,  94,
-     90,  86,  82,  79,  75,  72,  69,  66,
-     63,  61,  58,  56,  53,  51,  49,  47,
-     45,  43,  41,  39,  38,  36,  34,  33,
-     32,  30,  29,  28,  27,  25,  24,  23,
-     22,  21,  21,  20,  19,  18,  17,  16,
-     16,  15,  14,  14,  13,  13,  12,  12,
-     11,  11,  10,  10,   9,   9,   9,   8,
-      8,   8,   7,   7,   7,   6,   6,   6,
-      6,   5,   5,   5,   5,   4,   4,   4,
-      4,   4,   4,   3,   3,   3,   3,   3,
-      3,   3,   3,   2,   2,   2,   2,   2,
-      2,   2,   2,   2,   2,   2,   2,   1,
+  {   0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
       1,   1,   1,   1,   1,   1,   1,   1,
       1,   1,   1,   1,   1,   1,   1,   1,
       1,   1,   1,   1,   1,   1,   1,   1,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0,
-      0,   0,   0,   0,   0,   0,   0,   0
+      1,   2,   2,   2,   2,   2,   2,   2,
+      2,   2,   2,   2,   2,   3,   3,   3,
+      3,   3,   3,   3,   3,   4,   4,   4,
+      4,   4,   4,   5,   5,   5,   5,   6,
+      6,   6,   6,   7,   7,   7,   8,   8,
+      8,   9,   9,   9,  10,  10,  11,  11,
+     12,  12,  13,  13,  14,  14,  15,  16,
+     16,  17,  18,  19,  20,  21,  21,  22,
+     23,  24,  25,  27,  28,  29,  30,  32,
+     33,  34,  36,  38,  39,  41,  43,  45,
+     47,  49,  51,  53,  56,  58,  61,  63,
+     66,  69,  72,  75,  79,  82,  86,  90,
+     94,  98, 102, 107, 112, 117, 122, 127,
+    133, 139, 145, 151, 158, 165, 172, 180,
+    188, 197, 205, 214, 224, 234, 244, 255
   };
 
 static unsigned short S_apu_vca_rise_to_fall_remap_table[256] = 
-  { 255, 127, 112, 102,  96,  90,  86,  83,
-     80,  77,  74,  72,  70,  68,  67,  65,
-     64,  62,  61,  60,  59,  57,  56,  55,
-     54,  53,  52,  52,  51,  50,  49,  48,
-     48,  47,  46,  46,  45,  44,  44,  43,
-     43,  42,  41,  41,  40,  40,  39,  39,
-     38,  38,  37,  37,  37,  36,  36,  35,
-     35,  34,  34,  34,  33,  33,  33,  32,
-     32,  31,  31,  31,  30,  30,  30,  29,
-     29,  29,  28,  28,  28,  28,  27,  27,
-     27,  26,  26,  26,  26,  25,  25,  25,
-     24,  24,  24,  24,  23,  23,  23,  23,
-     22,  22,  22,  22,  22,  21,  21,  21,
-     21,  20,  20,  20,  20,  20,  19,  19,
-     19,  19,  18,  18,  18,  18,  18,  17,
-     17,  17,  17,  17,  17,  16,  16,  16,
-     16,  16,  16,  15,  15,  15,  15,  15,
-     14,  14,  14,  14,  14,  14,  13,  13,
-     13,  13,  13,  13,  13,  12,  12,  12,
-     12,  12,  12,  11,  11,  11,  11,  11,
-     11,  11,  10,  10,  10,  10,  10,  10,
-     10,   9,   9,   9,   9,   9,   9,   9,
-      9,   8,   8,   8,   8,   8,   8,   8,
-      8,   7,   7,   7,   7,   7,   7,   7,
-      7,   6,   6,   6,   6,   6,   6,   6,
-      6,   5,   5,   5,   5,   5,   5,   5,
-      5,   5,   4,   4,   4,   4,   4,   4,
-      4,   4,   4,   3,   3,   3,   3,   3,
-      3,   3,   3,   3,   3,   2,   2,   2,
-      2,   2,   2,   2,   2,   2,   2,   1,
-      1,   1,   1,   1,   1,   1,   1,   1,
-      1,   1,   0,   0,   0,   0,   0,   0
+  {   0, 128, 143, 153, 159, 165, 169, 172,
+    175, 178, 181, 183, 185, 187, 188, 190,
+    191, 193, 194, 195, 196, 198, 199, 200,
+    201, 202, 203, 203, 204, 205, 206, 207,
+    207, 208, 209, 209, 210, 211, 211, 212,
+    212, 213, 214, 214, 215, 215, 216, 216,
+    217, 217, 218, 218, 218, 219, 219, 220,
+    220, 221, 221, 221, 222, 222, 222, 223,
+    223, 224, 224, 224, 225, 225, 225, 226,
+    226, 226, 227, 227, 227, 227, 228, 228,
+    228, 229, 229, 229, 229, 230, 230, 230,
+    231, 231, 231, 231, 232, 232, 232, 232,
+    233, 233, 233, 233, 233, 234, 234, 234,
+    234, 235, 235, 235, 235, 235, 236, 236,
+    236, 236, 237, 237, 237, 237, 237, 238,
+    238, 238, 238, 238, 238, 239, 239, 239,
+    239, 239, 239, 240, 240, 240, 240, 240,
+    241, 241, 241, 241, 241, 241, 242, 242,
+    242, 242, 242, 242, 242, 243, 243, 243,
+    243, 243, 243, 244, 244, 244, 244, 244,
+    244, 244, 245, 245, 245, 245, 245, 245,
+    245, 246, 246, 246, 246, 246, 246, 246,
+    246, 247, 247, 247, 247, 247, 247, 247,
+    247, 248, 248, 248, 248, 248, 248, 248,
+    248, 249, 249, 249, 249, 249, 249, 249,
+    249, 250, 250, 250, 250, 250, 250, 250,
+    250, 250, 251, 251, 251, 251, 251, 251,
+    251, 251, 251, 252, 252, 252, 252, 252,
+    252, 252, 252, 252, 252, 253, 253, 253,
+    253, 253, 253, 253, 253, 253, 253, 254,
+    254, 254, 254, 254, 254, 254, 254, 254,
+    254, 254, 255, 255, 255, 255, 255, 255
+  };
+
+/* sustain level table */
+static unsigned short S_apu_vca_sustain_level_table[100] = 
+  { 175, 176, 176, 177, 178, 178, 179, 180, 180, 181,
+    181, 182, 183, 183, 184, 185, 185, 186, 187, 187,
+    188, 189, 189, 190, 191, 191, 192, 192, 193, 194,
+    194, 195, 196, 196, 197, 198, 198, 199, 200, 200,
+    201, 202, 202, 203, 203, 204, 205, 205, 206, 207,
+    207, 208, 209, 209, 210, 211, 211, 212, 212, 213,
+    214, 214, 215, 216, 216, 217, 218, 218, 219, 220,
+    220, 221, 222, 222, 223, 223, 224, 225, 225, 226,
+    227, 227, 228, 229, 229, 230, 231, 231, 232, 233,
+    233, 234, 234, 235, 236, 236, 237, 238, 238, 239
   };
 
 /* speed table */
-static unsigned short S_apu_vca_speed_table[10] = 
-  { 14, 13, 11, 10,  8,  6,  5,  3,  2,  0 };
+static unsigned short S_apu_vca_speed_table[100] = 
+  { 158, 157, 155, 154, 152, 150, 149, 147, 146, 144,
+    142, 141, 139, 138, 136, 134, 133, 131, 130, 128,
+    126, 125, 123, 122, 120, 118, 117, 115, 114, 112,
+    110, 109, 107, 106, 104, 102, 101,  99,  98,  96,
+     94,  93,  91,  90,  88,  86,  85,  83,  82,  80,
+     78,  77,  75,  74,  72,  70,  69,  67,  66,  64,
+     62,  61,  59,  58,  56,  54,  53,  51,  50,  48,
+     46,  45,  43,  42,  40,  38,  37,  35,  34,  32,
+     30,  29,  27,  26,  24,  22,  21,  19,  18,  16,
+     14,  13,  11,  10,   8,   6,   5,   3,   2,   0
+  };
 
-#define APU_VCA_RISE_SPEED_OFFSET 2
-#define APU_VCA_FALL_SPEED_OFFSET 0
+#define APU_VCA_RISE_SPEED_OFFSET 32
 
 /* envelope keyscaling */
 #define APU_ENV_KEYSCALING_DIVISOR  256
@@ -341,19 +382,15 @@ static unsigned short S_apu_vca_speed_table[10] =
 /* VCO */
 /*******/
 
-/* phase tables */
-#define APU_VCO_PHASE_NUM_BLOCKS 9
-#define APU_VCO_PHASE_TABLE_SIZE 1024
+/* pitch table */
+#define APU_VCO_PITCH_NUM_BLOCKS 9
+#define APU_VCO_PITCH_TABLE_SIZE 1024
 
-#define APU_VCO_PHASE_MAX_INDEX  ((9 * 1024) - 1)
+#define APU_VCO_PITCH_MAX_INDEX  ((9 * 1024) - 1)
 
-static unsigned short S_apu_vco_phase_shifts_table[APU_VCO_PHASE_NUM_BLOCKS] = 
-  {  6,  5,  4,  3,  2,  1,  0,  0,  0 };
+#define APU_VCO_PITCH_BASE_BLOCK 6
 
-static unsigned short S_apu_vco_phase_steps_table[APU_VCO_PHASE_NUM_BLOCKS] = 
-  {  1,  1,  1,  1,  1,  1,  1,  2,  4 };
-
-static unsigned short S_apu_vco_phase_incs_table[APU_VCO_PHASE_TABLE_SIZE] = 
+static unsigned short S_apu_vco_pitch_table[APU_VCO_PITCH_TABLE_SIZE] = 
   { 22861, 22877, 22892, 22908, 22923, 22939, 22954, 22970,
     22985, 23001, 23016, 23032, 23048, 23063, 23079, 23094,
     23110, 23126, 23141, 23157, 23173, 23188, 23204, 23220,
@@ -489,7 +526,7 @@ static unsigned short S_apu_vco_note_map[12] =
   { 0, 85, 171, 256, 341, 427, 512, 597, 683, 768, 853, 939 };
 
 /* sine wavetable (10 bit index, 1st quarter cycle stored) */
-static unsigned short S_apu_vco_sine_wavetable[256] = 
+static unsigned short S_apu_vco_sine_table[256] = 
   {  2137,  1731,  1543,  1419,  1326,  1252,  1190,  1137,
      1091,  1050,  1013,   979,   949,   920,   894,   869,
       846,   825,   804,   785,   767,   749,   732,   717,
@@ -524,45 +561,13 @@ static unsigned short S_apu_vco_sine_wavetable[256] =
         0,     0,     0,     0,     0,     0,     0,     0
   };
 
-/*******/
-/* PCM */
-/*******/
+/* level table */
+#define APU_VCO_LEVEL_NUM_BLOCKS 16   /* blocks 0 to 15 */
+#define APU_VCO_LEVEL_TABLE_SIZE 256
 
-/* phase tables */
-static unsigned short S_apu_pcm_phase_incs[4] = 
-  { 22629, 22837, 30106, 60211 };
+#define APU_VCO_LEVEL_MAX_INDEX  4095 /* num_blocks * table_size - 1 */
 
-/* value to db table (8 bits) */
-static unsigned short S_apu_pcm_val_to_db_table[128] = 
-  { 2047, 1641, 1452, 1328, 1235, 1161, 1099, 1046,
-    1000,  959,  922,  889,  858,  829,  803,  778,
-     755,  733,  713,  693,  675,  657,  641,  625,
-     609,  594,  580,  567,  553,  541,  528,  516,
-     505,  494,  483,  472,  462,  452,  442,  433,
-     424,  415,  406,  397,  389,  381,  373,  365,
-     357,  349,  342,  335,  328,  321,  314,  307,
-     301,  294,  288,  281,  275,  269,  263,  257,
-     252,  246,  240,  235,  229,  224,  219,  214,
-     208,  203,  198,  194,  189,  184,  179,  174,
-     170,  165,  161,  156,  152,  148,  143,  139,
-     135,  131,  127,  123,  119,  115,  111,  107,
-     103,   99,   95,   92,   88,   84,   81,   77,
-      73,   70,   66,   63,   60,   56,   53,   50,
-      46,   43,   40,   37,   33,   30,   27,   24,
-      21,   18,   15,   12,    9,    6,    3,    0
-  };
-
-/*******/
-/* OUT */
-/*******/
-
-/* db to linear table */
-#define APU_DB_TO_LIN_NUM_BLOCKS 16   /* blocks 0 to 15 */
-#define APU_DB_TO_LIN_TABLE_SIZE 256
-
-#define APU_DB_TO_LIN_MAX_INDEX  4095 /* num_blocks * table_size - 1 */
-
-static unsigned short S_apu_db_to_linear_table[APU_DB_TO_LIN_TABLE_SIZE] = 
+static unsigned short S_apu_vco_level_table[APU_VCO_LEVEL_TABLE_SIZE] = 
   { 32768, 32679, 32591, 32503, 32415, 32327, 32240, 32153,
     32066, 31979, 31893, 31806, 31720, 31635, 31549, 31464,
     31379, 31294, 31209, 31125, 31041, 30957, 30873, 30790,
@@ -596,6 +601,38 @@ static unsigned short S_apu_db_to_linear_table[APU_DB_TO_LIN_TABLE_SIZE] =
     17109, 17063, 17017, 16971, 16925, 16879, 16834, 16788,
     16743, 16697, 16652, 16607, 16562, 16518, 16473, 16428
   };
+
+/*******/
+/* PCM */
+/*******/
+
+/* phase tables */
+static unsigned short S_apu_pcm_phase_incs[4] = 
+  { 22629, 22837, 30106, 60211 };
+
+/* value to db table (8 bits) */
+static unsigned short S_apu_pcm_val_to_db_table[128] = 
+  { 2047, 1641, 1452, 1328, 1235, 1161, 1099, 1046,
+    1000,  959,  922,  889,  858,  829,  803,  778,
+     755,  733,  713,  693,  675,  657,  641,  625,
+     609,  594,  580,  567,  553,  541,  528,  516,
+     505,  494,  483,  472,  462,  452,  442,  433,
+     424,  415,  406,  397,  389,  381,  373,  365,
+     357,  349,  342,  335,  328,  321,  314,  307,
+     301,  294,  288,  281,  275,  269,  263,  257,
+     252,  246,  240,  235,  229,  224,  219,  214,
+     208,  203,  198,  194,  189,  184,  179,  174,
+     170,  165,  161,  156,  152,  148,  143,  139,
+     135,  131,  127,  123,  119,  115,  111,  107,
+     103,   99,   95,   92,   88,   84,   81,   77,
+      73,   70,   66,   63,   60,   56,   53,   50,
+      46,   43,   40,   37,   33,   30,   27,   24,
+      21,   18,   15,   12,    9,    6,    3,    0
+  };
+
+/*******/
+/* OUT */
+/*******/
 
 /* highpass filters */
 #define APU_HP_MULT_A0 32768
@@ -850,12 +887,12 @@ int apu_reset()
 
     APU_WAVE_REG(m, VCA_STAGE)  = APU_VCA_STAGE_R;
     APU_WAVE_REG(m, VCA_PHASE)  = 0;
-    APU_WAVE_REG(m, VCA_INDEX)  = 255;
-    APU_WAVE_REG(m, VCA_LEVEL)  = APU_DB_TO_LIN_MAX_INDEX;
+    APU_WAVE_REG(m, VCA_INDEX)  = 0;
+    APU_WAVE_REG(m, VCA_LEVEL)  = APU_VCO_LEVEL_MAX_INDEX;
 
     APU_WAVE_REG(m, VCO_PHASE)  = 0;
     APU_WAVE_REG(m, VCO_INDEX)  = 0;
-    APU_WAVE_REG(m, VCO_LEVEL)  = APU_DB_TO_LIN_MAX_INDEX;
+    APU_WAVE_REG(m, VCO_LEVEL)  = APU_VCO_LEVEL_MAX_INDEX;
 
     APU_WAVE_REG(m, WHEEL_PITCH) = 0;
     APU_WAVE_REG(m, WHEEL_VIB)   = 0;
@@ -873,7 +910,7 @@ int apu_reset()
 
     APU_PCM_REG(m, PHASE) = 0;
     APU_PCM_REG(m, INDEX) = 0;
-    APU_PCM_REG(m, LEVEL) = APU_DB_TO_LIN_MAX_INDEX;
+    APU_PCM_REG(m, LEVEL) = APU_VCO_LEVEL_MAX_INDEX;
   }
 
   for (m = 0; m < APU_NUM_SEQ_TRACKS; m++)
@@ -1089,8 +1126,9 @@ int apu_advance_vca()
   unsigned short entry;
   unsigned short increment;
 
-  unsigned short rate;
-  unsigned short remap_index;
+  unsigned short speed;
+  unsigned short steps;
+  unsigned short sustain;
 
   for (m = 0; m < APU_NUM_WAVE_VOICES; m++)
   {
@@ -1099,50 +1137,69 @@ int apu_advance_vca()
 
     /* determine envelope rate */
     if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_A)
-      rate = APU_PATCH_PARAM(patch_num, ENV_AR);
+      speed = S_apu_vca_speed_table[APU_PATCH_PARAM(patch_num, ENV_AR)];
     else if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_D)
-      rate = APU_PATCH_PARAM(patch_num, ENV_DR);
+      speed = S_apu_vca_speed_table[APU_PATCH_PARAM(patch_num, ENV_DR)];
     else if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_S)
-      rate = APU_PATCH_PARAM(patch_num, ENV_SR);
+      speed = S_apu_vca_speed_table[APU_PATCH_PARAM(patch_num, ENV_SR)];
     else
-      rate = APU_PATCH_PARAM(patch_num, ENV_RR);
-
-    block = 9 - (rate / 10);
-    entry = S_apu_vca_speed_table[rate % 10];
+      speed = S_apu_vca_speed_table[APU_PATCH_PARAM(patch_num, ENV_RR)];
 
     if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_A)
-      block += APU_VCA_RISE_SPEED_OFFSET;
-    else
-      block += APU_VCA_FALL_SPEED_OFFSET;
+      speed += APU_VCA_RISE_SPEED_OFFSET;
 
     /* lookup phase increment */
+    block = speed / APU_VCA_PITCH_TABLE_SIZE;
+    entry = speed % APU_VCA_PITCH_TABLE_SIZE;
+
     increment = S_apu_vca_phase_incs_table[entry];
 
     if (S_apu_vca_phase_shifts_table[block] > 0)
       increment = increment >> S_apu_vca_phase_shifts_table[block];
+
+    /* adjust increment based on sustain level and stage */
+    sustain = 
+      S_apu_vca_sustain_level_table[APU_PATCH_PARAM(patch_num, ENV_RR)];
+
+    if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_D)
+      increment = (increment * (255 - sustain)) >> 8;
+    else if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_S)
+      increment = (increment * sustain) >> 8;
 
     /* update phase (8.12 fixed point) */
     APU_WAVE_REG(m, VCA_PHASE) += increment;
 
     if (APU_WAVE_REG(m, VCA_PHASE) > 4095)
     {
-      APU_WAVE_REG(m, VCA_INDEX) += 
+      steps = 
         S_apu_vca_phase_steps_table[block] * (APU_WAVE_REG(m, VCA_PHASE) >> 12);
 
-      if (APU_WAVE_REG(m, VCA_INDEX) > 255)
+      if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_A)
       {
-        if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_A)
+        APU_WAVE_REG(m, VCA_INDEX) += steps;
+
+        if (APU_WAVE_REG(m, VCA_INDEX) > 255)
         {
           APU_WAVE_REG(m, VCA_STAGE) = APU_VCA_STAGE_D;
-          APU_WAVE_REG(m, VCA_INDEX) = 0;
-        }
-        else if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_D)
-        {
-          APU_WAVE_REG(m, VCA_STAGE) = APU_VCA_STAGE_S;
-          APU_WAVE_REG(m, VCA_INDEX) = 0;
-        }
-        else
           APU_WAVE_REG(m, VCA_INDEX) = 255;
+        }
+      }
+      else if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_D)
+      {
+        if (APU_WAVE_REG(m, VCA_INDEX) < steps)
+          APU_WAVE_REG(m, VCA_INDEX) = 0;
+        else
+          APU_WAVE_REG(m, VCA_INDEX) -= steps;
+
+        if (APU_WAVE_REG(m, VCA_INDEX) <= sustain)
+          APU_WAVE_REG(m, VCA_STAGE) = APU_VCA_STAGE_S;
+      }
+      else
+      {
+        if (APU_WAVE_REG(m, VCA_INDEX) < steps)
+          APU_WAVE_REG(m, VCA_INDEX) = 0;
+        else
+          APU_WAVE_REG(m, VCA_INDEX) -= steps;
       }
     }
 
@@ -1155,27 +1212,10 @@ int apu_advance_vca()
       APU_WAVE_REG(m, VCA_LEVEL) = 
         S_apu_vca_rise_curve_table[APU_WAVE_REG(m, VCA_INDEX)];
     }
-    else if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_D)
-    {
-      remap_index = APU_WAVE_REG(m, VCA_INDEX);
-      remap_index *= S_apu_vca_sustain_index_table[APU_PATCH_PARAM(patch_num, ENV_SL)];
-      remap_index /= 256;
-
-      APU_WAVE_REG(m, VCA_LEVEL) = (APU_VCA_FALL_CURVE_MULT * remap_index) / 16;
-    }
-    else if (APU_WAVE_REG(m, VCA_STAGE) == APU_VCA_STAGE_S)
-    {
-      remap_index = APU_WAVE_REG(m, VCA_INDEX);
-      remap_index *= 255 - S_apu_vca_sustain_index_table[APU_PATCH_PARAM(patch_num, ENV_SL)];
-      remap_index /= 256;
-      remap_index += S_apu_vca_sustain_index_table[APU_PATCH_PARAM(patch_num, ENV_SL)];
-
-      APU_WAVE_REG(m, VCA_LEVEL) = (APU_VCA_FALL_CURVE_MULT * remap_index) / 16;
-    }
     else
     {
       APU_WAVE_REG(m, VCA_LEVEL) = 
-        (APU_VCA_FALL_CURVE_MULT * APU_WAVE_REG(m, VCA_INDEX)) / 16;
+        S_apu_vca_fall_curve_table[APU_WAVE_REG(m, VCA_INDEX)];
     }
   }
 
@@ -1194,6 +1234,7 @@ int apu_advance_vco()
   unsigned short block;
   unsigned short entry;
   unsigned short increment;
+  unsigned short steps;
 
   int phase_index;
   int final_level_db;
@@ -1204,48 +1245,53 @@ int apu_advance_vco()
     patch_num = APU_WAVE_REG(m, PATCH_NO);
 
     /* lookup phase increment, apply vibrato */
-    phase_index = (APU_WAVE_REG(m, NOTE) / 12) * APU_VCO_PHASE_TABLE_SIZE;
+    phase_index = (APU_WAVE_REG(m, NOTE) / 12) * APU_VCO_PITCH_TABLE_SIZE;
     phase_index += S_apu_vco_note_map[APU_WAVE_REG(m, NOTE) % 12];
 
     phase_index += APU_WAVE_REG(m, VIB_LEVEL);
 
-    if (phase_index > APU_VCO_PHASE_MAX_INDEX)
-      phase_index = APU_VCO_PHASE_MAX_INDEX;
+    if (phase_index > APU_VCO_PITCH_MAX_INDEX)
+      phase_index = APU_VCO_PITCH_MAX_INDEX;
     else if (phase_index < 0)
       phase_index = 0;
 
-    block = phase_index / APU_VCO_PHASE_TABLE_SIZE;
-    entry = phase_index % APU_VCO_PHASE_TABLE_SIZE;
+    block = phase_index / APU_VCO_PITCH_TABLE_SIZE;
+    entry = phase_index % APU_VCO_PITCH_TABLE_SIZE;
 
-    increment = S_apu_vco_phase_incs_table[entry];
+    increment = S_apu_vco_pitch_table[entry];
 
-    if (S_apu_vco_phase_shifts_table[block] > 0)
-      increment = increment >> S_apu_vco_phase_shifts_table[block];
+    if (block < APU_VCO_PITCH_BASE_BLOCK)
+      increment = increment >> (APU_VCO_PITCH_BASE_BLOCK - block);
 
     /* update phase (10.10 fixed point) */
     APU_WAVE_REG(m, VCO_PHASE) += increment;
-    APU_WAVE_REG(m, VCO_INDEX) += 
-      S_apu_vco_phase_steps_table[block] * (APU_WAVE_REG(m, VCO_PHASE) >> 10);
+
+    steps = (APU_WAVE_REG(m, VCO_PHASE) >> 10);
+
+    if (block > APU_VCO_PITCH_BASE_BLOCK)
+      steps = steps << (block - APU_VCO_PITCH_BASE_BLOCK);
+
+    APU_WAVE_REG(m, VCO_INDEX) += steps;
 
     APU_WAVE_REG(m, VCO_PHASE) &= 0x03FF;
     APU_WAVE_REG(m, VCO_INDEX) &= 0x03FF;
 
     /* sine wavetable lookup */
     if (APU_WAVE_REG(m, VCO_INDEX) < 256)
-      final_level_db = S_apu_vco_sine_wavetable[APU_WAVE_REG(m, VCO_INDEX)];
+      final_level_db = S_apu_vco_sine_table[APU_WAVE_REG(m, VCO_INDEX)];
     else if (APU_WAVE_REG(m, VCO_INDEX) < 512)
-      final_level_db = S_apu_vco_sine_wavetable[511 - APU_WAVE_REG(m, VCO_INDEX)];
+      final_level_db = S_apu_vco_sine_table[511 - APU_WAVE_REG(m, VCO_INDEX)];
     else if (APU_WAVE_REG(m, VCO_INDEX) < 768)
-      final_level_db = S_apu_vco_sine_wavetable[APU_WAVE_REG(m, VCO_INDEX) - 512];
+      final_level_db = S_apu_vco_sine_table[APU_WAVE_REG(m, VCO_INDEX) - 512];
     else
-      final_level_db = S_apu_vco_sine_wavetable[1023 - APU_WAVE_REG(m, VCO_INDEX)];
+      final_level_db = S_apu_vco_sine_table[1023 - APU_WAVE_REG(m, VCO_INDEX)];
 
     /* apply envelope and tremolo */
     final_level_db += APU_WAVE_REG(m, VCA_LEVEL);
     final_level_db += APU_WAVE_REG(m, TREM_LEVEL);
 
-    if (final_level_db > APU_DB_TO_LIN_MAX_INDEX)
-      final_level_db = APU_DB_TO_LIN_MAX_INDEX;
+    if (final_level_db > APU_VCO_LEVEL_MAX_INDEX)
+      final_level_db = APU_VCO_LEVEL_MAX_INDEX;
     else if (final_level_db < 0)
       final_level_db = 0;
 
@@ -1280,10 +1326,10 @@ int apu_advance_sample()
 
   for (m = 0; m < APU_NUM_WAVE_VOICES; m++)
   {
-    block = (APU_WAVE_REG(m, VCO_LEVEL) & 0x0FFF) / APU_DB_TO_LIN_TABLE_SIZE;
-    entry = (APU_WAVE_REG(m, VCO_LEVEL) & 0x0FFF) % APU_DB_TO_LIN_TABLE_SIZE;
+    block = (APU_WAVE_REG(m, VCO_LEVEL) & 0x0FFF) / APU_VCO_LEVEL_TABLE_SIZE;
+    entry = (APU_WAVE_REG(m, VCO_LEVEL) & 0x0FFF) % APU_VCO_LEVEL_TABLE_SIZE;
 
-    voice_level = S_apu_db_to_linear_table[entry];
+    voice_level = S_apu_vco_level_table[entry];
 
     if (block > 0)
       voice_level = voice_level >> block;
