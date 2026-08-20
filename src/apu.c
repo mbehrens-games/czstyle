@@ -320,41 +320,44 @@ static unsigned short S_apu_osc_sine_table[256] =
 #define APU_OSC_LEVEL_NUM_BLOCKS 16   /* blocks 0 to 15 */
 #define APU_OSC_LEVEL_TABLE_SIZE 256
 
-#define APU_OSC_MAX_LEVEL  ((16 * 256) - 1) /* 4095 */
+#define APU_OSC_MAX_LEVEL ((16 * 256) - 1) /* 4095 */
 
+#define APU_OSC_LEVEL_ZERO_BLOCK 13   /* output is zeroed from here out */
+
+/* converting from 12 bit db value to 13 bit linear value */
 static unsigned short S_apu_osc_level_table[APU_OSC_LEVEL_TABLE_SIZE] = 
-  { 32768, 32679, 32591, 32503, 32415, 32327, 32240, 32153,
-    32066, 31979, 31893, 31806, 31720, 31635, 31549, 31464,
-    31379, 31294, 31209, 31125, 31041, 30957, 30873, 30790,
-    30706, 30623, 30541, 30458, 30376, 30293, 30212, 30130,
-    30048, 29967, 29886, 29805, 29725, 29644, 29564, 29484,
-    29405, 29325, 29246, 29167, 29088, 29009, 28931, 28852,
-    28774, 28697, 28619, 28542, 28464, 28388, 28311, 28234,
-    28158, 28082, 28006, 27930, 27855, 27779, 27704, 27629,
-    27554, 27480, 27406, 27332, 27258, 27184, 27110, 27037,
-    26964, 26891, 26818, 26746, 26674, 26601, 26530, 26458,
-    26386, 26315, 26244, 26173, 26102, 26031, 25961, 25891,
-    25821, 25751, 25681, 25612, 25543, 25474, 25405, 25336,
-    25268, 25199, 25131, 25063, 24995, 24928, 24860, 24793,
-    24726, 24659, 24593, 24526, 24460, 24394, 24328, 24262,
-    24196, 24131, 24066, 24001, 23936, 23871, 23806, 23742,
-    23678, 23614, 23550, 23486, 23423, 23359, 23296, 23233,
-    23170, 23108, 23045, 22983, 22921, 22859, 22797, 22735,
-    22674, 22613, 22552, 22491, 22430, 22369, 22309, 22248,
-    22188, 22128, 22068, 22009, 21949, 21890, 21831, 21772,
-    21713, 21654, 21595, 21537, 21479, 21421, 21363, 21305,
-    21247, 21190, 21133, 21076, 21019, 20962, 20905, 20849,
-    20792, 20736, 20680, 20624, 20568, 20513, 20457, 20402,
-    20347, 20292, 20237, 20182, 20127, 20073, 20019, 19965,
-    19911, 19857, 19803, 19750, 19696, 19643, 19590, 19537,
-    19484, 19431, 19379, 19326, 19274, 19222, 19170, 19118,
-    19066, 19015, 18963, 18912, 18861, 18810, 18759, 18708,
-    18658, 18607, 18557, 18507, 18457, 18407, 18357, 18308,
-    18258, 18209, 18160, 18110, 18061, 18013, 17964, 17915,
-    17867, 17819, 17770, 17722, 17674, 17627, 17579, 17531,
-    17484, 17437, 17390, 17343, 17296, 17249, 17202, 17156,
-    17109, 17063, 17017, 16971, 16925, 16879, 16834, 16788,
-    16743, 16697, 16652, 16607, 16562, 16518, 16473, 16428
+  { 8168, 8148, 8124, 8104, 8080, 8060, 8036, 8016,
+    7992, 7972, 7952, 7928, 7908, 7884, 7864, 7844,
+    7820, 7800, 7780, 7760, 7736, 7716, 7696, 7676,
+    7656, 7632, 7612, 7592, 7572, 7552, 7532, 7512,
+    7492, 7472, 7448, 7428, 7408, 7388, 7368, 7348,
+    7328, 7308, 7292, 7272, 7252, 7232, 7212, 7192,
+    7172, 7152, 7132, 7116, 7096, 7076, 7056, 7036,
+    7020, 7000, 6980, 6964, 6944, 6924, 6904, 6888,
+    6868, 6848, 6832, 6812, 6796, 6776, 6756, 6740,
+    6720, 6704, 6684, 6668, 6648, 6632, 6612, 6596,
+    6576, 6560, 6540, 6524, 6508, 6488, 6472, 6452,
+    6436, 6420, 6400, 6384, 6368, 6348, 6332, 6316,
+    6300, 6280, 6264, 6248, 6232, 6212, 6196, 6180,
+    6164, 6148, 6132, 6112, 6096, 6080, 6064, 6048,
+    6032, 6016, 6000, 5984, 5968, 5952, 5936, 5916,
+    5900, 5884, 5872, 5856, 5840, 5824, 5808, 5792,
+    5776, 5760, 5744, 5728, 5712, 5696, 5684, 5668,
+    5652, 5636, 5620, 5604, 5592, 5576, 5560, 5544,
+    5532, 5516, 5500, 5484, 5472, 5456, 5440, 5428,
+    5412, 5396, 5384, 5368, 5352, 5340, 5324, 5312,
+    5296, 5280, 5268, 5252, 5240, 5224, 5212, 5196,
+    5184, 5168, 5156, 5140, 5128, 5112, 5100, 5084,
+    5072, 5056, 5044, 5032, 5016, 5004, 4988, 4976,
+    4964, 4948, 4936, 4924, 4908, 4896, 4884, 4868,
+    4856, 4844, 4832, 4816, 4804, 4792, 4780, 4764,
+    4752, 4740, 4728, 4712, 4700, 4688, 4676, 4664,
+    4652, 4636, 4624, 4612, 4600, 4588, 4576, 4564,
+    4552, 4540, 4528, 4512, 4500, 4488, 4476, 4464,
+    4452, 4440, 4428, 4416, 4404, 4392, 4380, 4368,
+    4356, 4344, 4336, 4324, 4312, 4300, 4288, 4276,
+    4264, 4252, 4240, 4228, 4220, 4208, 4196, 4184,
+    4172, 4160, 4152, 4140, 4128, 4116, 4104, 4096
   };
 
 /*******/
@@ -386,12 +389,12 @@ static unsigned short S_apu_pcm_val_to_db_table[128] =
   };
 
 /*******/
-/* MIX */
-/*******/
-
-/*******/
 /* OUT */
 /*******/
+
+/* dac */
+#define APU_DAC_POS_MULT 8224
+#define APU_DAC_NEG_MULT 8160
 
 /* highpass filters */
 #define APU_HP_MULT_A0  32768
@@ -399,11 +402,8 @@ static unsigned short S_apu_pcm_val_to_db_table[128] =
 #define APU_HP_MULT_B0  32700
 #define APU_HP_MULT_B1 -32700
 
-static short S_apu_hp_L_in[2];
-static short S_apu_hp_L_out[2];
-
-static short S_apu_hp_R_in[2];
-static short S_apu_hp_R_out[2];
+static short S_apu_hp_in[4];  /* 2 channels, 2 inputs each  */
+static short S_apu_hp_out[4]; /* 2 channels, 2 outputs each */
 
 /* lowpass filters */
 #define APU_LP_MULT_A0  32768
@@ -411,11 +411,8 @@ static short S_apu_hp_R_out[2];
 #define APU_LP_MULT_B0   5187
 #define APU_LP_MULT_B1   5187
 
-static short S_apu_lp_L_in[2];
-static short S_apu_lp_L_out[2];
-
-static short S_apu_lp_R_in[2];
-static short S_apu_lp_R_out[2];
+static short S_apu_lp_in[4];
+static short S_apu_lp_out[4];
 
 /* downsampler filters */
 #define APU_DS_M 64
@@ -751,22 +748,13 @@ int apu_reset()
     S_apu_pcm_data[m] = 0;
 
   /* reset filters */
-  for (m = 0; m < 2; m++)
+  for (m = 0; m < 4; m++)
   {
-    S_apu_hp_L_in[m] = 0;
-    S_apu_hp_L_out[m] = 0;
+    S_apu_hp_in[m] = 0;
+    S_apu_hp_out[m] = 0;
 
-    S_apu_hp_R_in[m] = 0;
-    S_apu_hp_R_out[m] = 0;
-  }
-
-  for (m = 0; m < 2; m++)
-  {
-    S_apu_lp_L_in[m] = 0;
-    S_apu_lp_L_out[m] = 0;
-
-    S_apu_lp_R_in[m] = 0;
-    S_apu_lp_R_out[m] = 0;
+    S_apu_lp_in[m] = 0;
+    S_apu_lp_out[m] = 0;
   }
 
   for (m = 0; m < APU_DS_BUFFER_SIZE; m++)
@@ -1175,115 +1163,102 @@ int apu_advance_osc()
 int apu_advance_out()
 {
   int m;
+  int n;
 
-  int samp_L;
-  int samp_R;
+  int samp[2];
 
+  unsigned short val;
   unsigned short block;
   unsigned short entry;
 
-  unsigned int voice_level;
+  unsigned int level;
 
-  /* compute mixed output (left & right) */
-  samp_L = 0;
-  samp_R = 0;
-
-  for (m = 0; m < APU_NUM_WAVE_VOICES; m++)
+  /* 2 channels (left & right) */
+  for (n = 0; n < 2; n++)
   {
-    block = (APU_WAVE_REG(m, OSC_LEVEL) & 0x0FFF) / APU_OSC_LEVEL_TABLE_SIZE;
-    entry = (APU_WAVE_REG(m, OSC_LEVEL) & 0x0FFF) % APU_OSC_LEVEL_TABLE_SIZE;
+    /* compute mixed output (14 bit signed) */
+    samp[n] = 0;
 
-    voice_level = S_apu_osc_level_table[entry];
+    for (m = 0; m < APU_NUM_WAVE_VOICES; m++)
+    {
+      if (n == 0)
+        val = APU_WAVE_REG(m, OSC_LEVEL); /* OSC_LEVEL_LEFT in the future...  */
+      else
+        val = APU_WAVE_REG(m, OSC_LEVEL); /* OSC_LEVEL_RIGHT in the future... */
 
-    if (block > 0)
-      voice_level = voice_level >> block;
+      block = (val & 0x0FFF) / APU_OSC_LEVEL_TABLE_SIZE;
+      entry = (val & 0x0FFF) % APU_OSC_LEVEL_TABLE_SIZE;
 
-    if (APU_WAVE_REG(m, OSC_LEVEL) & 0x1000)
-      samp_L -= voice_level;
+      level = S_apu_osc_level_table[entry];
+
+      if (block > 0)
+      {
+        if (block >= APU_OSC_LEVEL_ZERO_BLOCK)
+          level = 0;
+        else
+          level = level >> block;
+      }
+
+      if (val & 0x1000)
+        samp[n] -= level;
+      else
+        samp[n] += level;
+    }
+
+    if (samp[n] > 8191)
+      samp[n] = 8191;
+    else if (samp[n] < -8192)
+      samp[n] = -8192;
+
+    /* apply dac (9 bits signed input, 16 bits signed output) */
+    samp[n] = (samp[n] + 8192) / 32;
+
+    if (samp[n] >= 256)
+      samp[n] = (APU_DAC_POS_MULT * (samp[n] - 256)) / 64;
     else
-      samp_L += voice_level;
+      samp[n] = -32768 + ((APU_DAC_NEG_MULT * samp[n]) / 64);
 
-    if (APU_WAVE_REG(m, OSC_LEVEL) & 0x1000)
-      samp_R -= voice_level;
-    else
-      samp_R += voice_level;
+    if (samp[n] > 32767)
+      samp[n] = 32767;
+    else if (samp[n] < -32768)
+      samp[n] = -32768;
+
+    /* apply highpass filter */
+    S_apu_hp_in[2 * n + 1]  = S_apu_hp_in[2 * n + 0];
+    S_apu_hp_out[2 * n + 1] = S_apu_hp_out[2 * n + 0];
+
+    S_apu_hp_in[2 * n + 0] = samp[n];
+    samp[n] = ((APU_HP_MULT_B0 * S_apu_hp_in[2 * n + 0]) / 32768) + 
+              ((APU_HP_MULT_B1 * S_apu_hp_in[2 * n + 1]) / 32768) - 
+              ((APU_HP_MULT_A1 * S_apu_hp_out[2 * n + 1]) / 32768);
+
+    if (samp[n] > 32767)
+      samp[n] = 32767;
+    else if (samp[n] < -32768)
+      samp[n] = -32768;
+
+    S_apu_hp_out[2 * n + 0] = samp[n];
+
+    /* apply lowpass filter */
+    S_apu_lp_in[2 * n + 1]  = S_apu_lp_in[2 * n + 0];
+    S_apu_lp_out[2 * n + 1] = S_apu_lp_out[2 * n + 0];
+
+    S_apu_lp_in[2 * n + 0] = samp[n];
+    samp[n] = ((APU_LP_MULT_B0 * S_apu_lp_in[2 * n + 0]) / 32768) + 
+              ((APU_LP_MULT_B1 * S_apu_lp_in[2 * n + 1]) / 32768) - 
+              ((APU_LP_MULT_A1 * S_apu_lp_out[2 * n + 1]) / 32768);
+
+    if (samp[n] > 32767)
+      samp[n] = 32767;
+    else if (samp[n] < -32768)
+      samp[n] = -32768;
+
+    S_apu_lp_out[2 * n + 0] = samp[n];
   }
 
-  if (samp_L > 32767)
-    samp_L = 32767;
-  else if (samp_L < -32768)
-    samp_L = -32768;
-
-  if (samp_R > 32767)
-    samp_R = 32767;
-  else if (samp_R < -32768)
-    samp_R = -32768;
-
-  /* apply highpass filters (left & right) */
-  S_apu_hp_L_in[1]  = S_apu_hp_L_in[0];
-  S_apu_hp_L_out[1] = S_apu_hp_L_out[0];
-
-  S_apu_hp_L_in[0] = samp_L;
-  samp_L =  ((APU_HP_MULT_B0 * S_apu_hp_L_in[0]) / 32768) + 
-            ((APU_HP_MULT_B1 * S_apu_hp_L_in[1]) / 32768) - 
-            ((APU_HP_MULT_A1 * S_apu_hp_L_out[1]) / 32768);
-
-  if (samp_L > 32767)
-    samp_L = 32767;
-  else if (samp_L < -32768)
-    samp_L = -32768;
-
-  S_apu_hp_L_out[0] = samp_L;
-
-  S_apu_hp_R_in[1]  = S_apu_hp_R_in[0];
-  S_apu_hp_R_out[1] = S_apu_hp_R_out[0];
-
-  S_apu_hp_R_in[0] = samp_R;
-  samp_R =  ((APU_HP_MULT_B0 * S_apu_hp_R_in[0]) / 32768) + 
-            ((APU_HP_MULT_B1 * S_apu_hp_R_in[1]) / 32768) - 
-            ((APU_HP_MULT_A1 * S_apu_hp_R_out[1]) / 32768);
-
-  if (samp_R > 32767)
-    samp_R = 32767;
-  else if (samp_R < -32768)
-    samp_R = -32768;
-
-  S_apu_hp_R_out[0] = samp_R;
-
-  /* apply lowpass filters (left & right) */
-  S_apu_lp_L_in[1]  = S_apu_lp_L_in[0];
-  S_apu_lp_L_out[1] = S_apu_lp_L_out[0];
-
-  S_apu_lp_L_in[0] = S_apu_hp_L_out[0];
-  samp_L =  ((APU_LP_MULT_B0 * S_apu_lp_L_in[0]) / 32768) + 
-            ((APU_LP_MULT_B1 * S_apu_lp_L_in[1]) / 32768) - 
-            ((APU_LP_MULT_A1 * S_apu_lp_L_out[1]) / 32768);
-
-  if (samp_L > 32767)
-    samp_L = 32767;
-  else if (samp_L < -32768)
-    samp_L = -32768;
-
-  S_apu_lp_L_out[0] = samp_L;
-
-  S_apu_lp_R_in[1]  = S_apu_lp_R_in[0];
-  S_apu_lp_R_out[1] = S_apu_lp_R_out[0];
-
-  S_apu_lp_R_in[0] = S_apu_hp_R_out[0];
-  samp_R =  ((APU_LP_MULT_B0 * S_apu_lp_R_in[0]) / 32768) + 
-            ((APU_LP_MULT_B1 * S_apu_lp_R_in[1]) / 32768) - 
-            ((APU_LP_MULT_A1 * S_apu_lp_R_out[1]) / 32768);
-
-  if (samp_R > 32767)
-    samp_R = 32767;
-  else if (samp_R < -32768)
-    samp_R = -32768;
-
-  S_apu_lp_R_out[0] = samp_R;
-
   /* update downsampler filter input buffers (left & right) */
-  S_apu_ds_L_in[S_apu_ds_buf_pos] = S_apu_lp_L_out[0];
-  S_apu_ds_R_in[S_apu_ds_buf_pos] = S_apu_lp_R_out[0];
+  S_apu_ds_L_in[S_apu_ds_buf_pos] = S_apu_lp_out[2 * 0 + 0];
+  S_apu_ds_R_in[S_apu_ds_buf_pos] = S_apu_lp_out[2 * 1 + 0];
 
   S_apu_ds_buf_pos = (S_apu_ds_buf_pos + 1) % APU_DS_BUFFER_SIZE;
 
