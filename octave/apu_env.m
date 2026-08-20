@@ -10,27 +10,11 @@ clc;
 % if the block is greater than the base, step is left shifted by the difference
 env_rate_base_block = 11;
 
-% envelope pattern tables
-env_patterns_ints = [ 0x0000, 0x0080, 0x0808, 0x0888, ...
-                      0x2222, 0x22A2, 0x2A2A, 0x2AAA, ...
-                      0x5555, 0x55D5, 0x5D5D, 0x5DDD, ...
-                      0x7777, 0x77F7, 0x7F7F, 0x7FFF];
-
-%{
-for m = 1:8
-  for n = 1:16
-    env_patterns_normal(16 * (m - 1) + n) = ...
-      bitget(env_patterns_ints(m + 8), 17 - n);
-  endfor
-endfor
-
-for m = 1:8
-  for n = 1:16
-    env_patterns_fast(16 * (m - 1) + n) = ...
-      1 + bitget(env_patterns_ints(2 * m - 1), 17 - n);
-  endfor
-endfor
-%}
+% envelope patterns
+env_patterns = [0x0000, 0x0080, 0x0808, 0x0888, ...
+                0x2222, 0x22A2, 0x2A2A, 0x2AAA, ...
+                0x5555, 0x55D5, 0x5D5D, 0x5DDD, ...
+                0x7777, 0x77F7, 0x7F7F, 0x7FFF];
 
 % envelope param time to rate mapping (100 values)
 env_rise_time_map = round(16 + 112 * (99:-1:0)/100);
@@ -67,44 +51,6 @@ for m = 1:2
 endfor
 printf("  };")
 printf("\n\n")
-
-%{
-printf("Envelope Step Patterns (Normal) Table: \n");
-for m = 1:8
-  if (m == 1)
-    printf("  { ")
-  else
-    printf("    ")
-  endif
-  for n = 1:16
-    printf("%d", env_patterns_normal(16 * (m - 1) + n))
-    if ((m < 8) || (n < 16))
-      printf(", ")
-    endif
-  endfor
-  printf("\n")
-endfor
-printf("  };")
-printf("\n\n")
-
-printf("Envelope Step Patterns (Fast) Table: \n");
-for m = 1:8
-  if (m == 1)
-    printf("  { ")
-  else
-    printf("    ")
-  endif
-  for n = 1:16
-    printf("%d", env_patterns_fast(16 * (m - 1) + n))
-    if ((m < 8) || (n < 16))
-      printf(", ")
-    endif
-  endfor
-  printf("\n")
-endfor
-printf("  };")
-printf("\n\n")
-%}
 
 printf("Envelope Rise Time Map: \n");
 for m = 1:10

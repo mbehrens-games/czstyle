@@ -29,13 +29,9 @@ osc_pitch_deltas(48) = (2 * osc_pitch_table(1)) - osc_pitch_table(48);
 osc_pitch_detune = [0, 2, 4, 6];
 
 % oscillator sine wavetable
-osc_sine_table = round(-256 * (log(sin(2 * pi * (0.5+(0:255))/1024)) / log(2)));
-
-% oscillator level table (16 blocks, 256 entries per block)
-osc_level_table = round(32768 * exp(log(1/2) * (0:255)/256));
+osc_sine_table = round(-256 * (log(sin(2 * pi * ((1:2:511))/2048)) / log(2)));
 
 % print out tables and constants
-
 printf("Oscillator Pitch Base Block: \n");
 printf("#define APU_OSC_PITCH_BASE_BLOCK %d\n", osc_pitch_base_block)
 printf("\n")
@@ -96,24 +92,6 @@ for m = 1:32
   endif
   for n = 1:8
     printf("%5d", osc_sine_table(8 * (m - 1) + n))
-    if ((m < 32) || (n < 8))
-      printf(", ")
-    endif
-  endfor
-  printf("\n")
-endfor
-printf("  };")
-printf("\n\n")
-
-printf("Oscillator Level Table: \n")
-for m = 1:32
-  if (m == 1)
-    printf("  { ")
-  else
-    printf("    ")
-  endif
-  for n = 1:8
-    printf("%5d", osc_level_table(8 * (m - 1) + n))
     if ((m < 32) || (n < 8))
       printf(", ")
     endif

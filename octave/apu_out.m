@@ -6,11 +6,13 @@ clc;
 
 % filters
 fs = 48000;
-hp_fc = 27.5 / (fs / 2);
-lp_fc =  10500 / (fs / 2);
+hp_fc =    32 / (fs / 2); % c-1
+lp_fc =  2840 / (fs / 2); % sega genesis lowpass cutoff
+ds_fc = 10500 / (fs / 2); % middle of transition band (~3 khz width)
 
 [hp_b, hp_a] = butter(1, hp_fc, "high");
-lp_b = fir1(64, lp_fc);
+[lp_b, lp_a] = butter(1, lp_fc, "low");
+ds_b = fir1(64, ds_fc);
 
 %{
 [h, w] = freqz(hp_b, hp_a, 2048, fs);
@@ -18,7 +20,12 @@ plot(w, abs(h))
 %}
 
 %{
-[h, w] = freqz(lp_b, 1, 2048, fs);
+[h, w] = freqz(lp_b, lp_a, 2048, fs);
+plot(w, abs(h))
+%}
+
+%{
+[h, w] = freqz(ds_b, 1, 2048, fs);
 plot(w, abs(h))
 %}
 
@@ -26,17 +33,28 @@ hp_b = round(32768 * hp_b);
 hp_a = round(32768 * hp_a);
 
 lp_b = round(32768 * lp_b);
+lp_a = round(32768 * lp_a);
 
-% print out highpass filter coefficents
+ds_b = round(32768 * ds_b);
+
+% print out highpass (1st order) filter coefficents
 printf("Highpass Coefficents: \n");
-printf("#define APU_HP_MULT_A0 %d\n", hp_a(1))
-printf("#define APU_HP_MULT_A1 %d\n", hp_a(2))
-printf("#define APU_HP_MULT_B0 %d\n", hp_b(1))
-printf("#define APU_HP_MULT_B1 %d\n", hp_b(2))
+printf("#define APU_HP_MULT_A0 %6d\n", hp_a(1))
+printf("#define APU_HP_MULT_A1 %6d\n", hp_a(2))
+printf("#define APU_HP_MULT_B0 %6d\n", hp_b(1))
+printf("#define APU_HP_MULT_B1 %6d\n", hp_b(2))
 printf("\n")
 
-% print out lowpass filter kernel
-printf("Lowpass Filter Kernel: \n");
+% print out lowpass (1st order) filter coefficents
+printf("Lowpass Coefficents: \n");
+printf("#define APU_LP_MULT_A0 %6d\n", lp_a(1))
+printf("#define APU_LP_MULT_A1 %6d\n", lp_a(2))
+printf("#define APU_LP_MULT_B0 %6d\n", lp_b(1))
+printf("#define APU_LP_MULT_B1 %6d\n", lp_b(2))
+printf("\n")
+
+% print out downsampler filter kernel
+printf("Downsampler Filter Kernel: \n");
 for m = 1:4
   if (m == 1)
     printf("  { ")
@@ -44,14 +62,14 @@ for m = 1:4
     printf("    ")
   endif
   for n = 1:8
-    printf("%5d", lp_b(8 * (m - 1) + n))
+    printf("%5d", ds_b(8 * (m - 1) + n))
     if ((m < 48) || (n < 8))
       printf(", ")
     endif
   endfor
   printf("\n")
 endfor
-printf("    %5d\n", lp_b(33))
+printf("    %5d\n", ds_b(33))
 printf("  };")
 printf("\n\n")
 
