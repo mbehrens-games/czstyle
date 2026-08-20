@@ -42,7 +42,7 @@ for m = 1:2
     printf("    ")
   endif
   for n = 1:8
-    printf("0x%04X", env_patterns_ints(8 * (m - 1) + n))
+    printf("0x%04X", env_patterns(8 * (m - 1) + n))
     if ((m < 2) || (n < 8))
       printf(", ")
     endif

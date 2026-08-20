@@ -4,6 +4,14 @@ clc;
 % chip clock: 48 khz
 %  out clock: 24 khz
 
+% dac (9 bits to 16 bits)
+% the sega genesis dac has a "ladder effect"
+% there is a larger step between -1 and 0 than between the other values.
+% the base step is ~128 (16 - 9 = 7 bits), so the larger step is ~256
+% the multipliers have a 6 bit mantissa
+dac_pos_mult = round(64 * (32767 / 255));
+dac_neg_mult = round(64 * ((32768 - 256) / 255));
+
 % filters
 fs = 48000;
 hp_fc =    32 / (fs / 2); % c-1
@@ -36,6 +44,12 @@ lp_b = round(32768 * lp_b);
 lp_a = round(32768 * lp_a);
 
 ds_b = round(32768 * ds_b);
+
+% print out dac multipliers
+printf("DAC Multipliers: \n");
+printf("#define APU_DAC_POS_MULT %4d\n", dac_pos_mult)
+printf("#define APU_DAC_NEG_MULT %4d\n", dac_neg_mult)
+printf("\n")
 
 % print out highpass (1st order) filter coefficents
 printf("Highpass Coefficents: \n");
