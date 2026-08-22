@@ -4,6 +4,8 @@ clc;
 % envelope clock: 16 khz
 
 % envelope rates: 16 blocks, 8 rates per block (128 total)
+% envelope levels: 10 bit attenuation (0 to 1023)
+
 % starting envelope period is 1
 % starting envelope pattern step is 1
 % if the block is less than the base, period is left shifted by the difference
@@ -16,18 +18,30 @@ env_patterns = [0x0000, 0x0080, 0x0808, 0x0888, ...
                 0x5555, 0x55D5, 0x5D5D, 0x5DDD, ...
                 0x7777, 0x77F7, 0x7F7F, 0x7FFF];
 
-% envelope param time to rate mapping (100 values)
-env_rise_time_map = round(16 + 112 * (99:-1:0)/100);
-env_fall_time_map = round( 0 + 112 * (99:-1:0)/100);
+% patch param: envelope adsr rate (100 values)
+env_adsr_rate_map = [round(127 * ((99:-1:0)/99))];
 
-% envelope levels: 10 bit attenuation (0 to 1023)
+% patch param: envelope tl and sl (100 values)
+env_total_level_map = [1023, round(8 * 104 * (98:-1:0)/99)];
+env_sustain_level_map = [1023, round(32 * 14 * (99:-1:1)/99)];
 
-% envelope param sustain level mapping (100 values)
-env_sustain_level_map = [1023, round(512 * (99:-1:1)/99)];
+% patch param: rate keyscaling (100 values)
+% on the ym2612: rks 0 means the rate doubles every 8 octaves
+%                rks 1 means the rate doubles every 4 octaves
+%                rks 2 means the rate doubles every 2 octaves
+%                rks 3 means the rate doubles every 1 octave
+% the rate doubles for every 8 steps in the rate table (1 block),
+% and there are 96 notes in 8 octaves
+% so we have multipliers from 8/96 (slowest) to 64/96 (fastest)
+% these reduce to 1/12 (or 2^0 / 12) and 8/12 (or 2^3 / 12)
+env_rate_ks_map = round(256 * (exp(log(2) * (3 * (0:99)/99))/12));
 
-% envelope slope adjustments (for decay & sustain stages) (not needed?)
-env_decay_slopes = round(1024 * (env_sustain_level_map / 1023));
-env_sustain_slopes = round(1024 * ((1023 - env_sustain_level_map) / 1023));
+% patch param: level keyscaling (100 values)
+% the level halves for every 64 steps in the envelope index,
+% and there are 96 notes in 8 octaves
+% so we have multipliers from 64/96 (slowest) to 512/96 (fastest)
+% these reduce to 2/3 (or 2^1 / 3) and 16/3 (or 2^4 / 3)
+env_level_ks_map = round(256 * (exp(log(2) * (1 + 3 * (0:99)/99))/3));
 
 % print out tables and constants
 printf("Envelope Rate Base Block: \n");
@@ -52,7 +66,7 @@ endfor
 printf("  };")
 printf("\n\n")
 
-printf("Envelope Rise Time Map: \n");
+printf("Envelope ADSR Rate Map: \n");
 for m = 1:10
   if (m == 1)
     printf("  { ")
@@ -60,7 +74,7 @@ for m = 1:10
     printf("    ")
   endif
   for n = 1:10
-    printf("%3d", env_rise_time_map(10 * (m - 1) + n))
+    printf("%3d", env_adsr_rate_map(10 * (m - 1) + n))
     if ((m < 10) || (n < 10))
       printf(", ")
     endif
@@ -70,7 +84,7 @@ endfor
 printf("  };")
 printf("\n\n")
 
-printf("Envelope Fall Time Map: \n");
+printf("Envelope Total Level Map: \n");
 for m = 1:10
   if (m == 1)
     printf("  { ")
@@ -78,7 +92,7 @@ for m = 1:10
     printf("    ")
   endif
   for n = 1:10
-    printf("%3d", env_fall_time_map(10 * (m - 1) + n))
+    printf("%4d", env_total_level_map(10 * (m - 1) + n))
     if ((m < 10) || (n < 10))
       printf(", ")
     endif
@@ -106,7 +120,7 @@ endfor
 printf("  };")
 printf("\n\n")
 
-printf("Envelope Decay Slope Increments Table: \n");
+printf("Envelope Rate Keyscaling Map: \n");
 for m = 1:10
   if (m == 1)
     printf("  { ")
@@ -114,7 +128,7 @@ for m = 1:10
     printf("    ")
   endif
   for n = 1:10
-    printf("%4d", env_decay_slopes(10 * (m - 1) + n))
+    printf("%4d", env_rate_ks_map(10 * (m - 1) + n))
     if ((m < 10) || (n < 10))
       printf(", ")
     endif
@@ -124,7 +138,7 @@ endfor
 printf("  };")
 printf("\n\n")
 
-printf("Envelope Sustain Slope Increments Table: \n");
+printf("Envelope Level Keyscaling Map: \n");
 for m = 1:10
   if (m == 1)
     printf("  { ")
@@ -132,7 +146,7 @@ for m = 1:10
     printf("    ")
   endif
   for n = 1:10
-    printf("%4d", env_sustain_slopes(10 * (m - 1) + n))
+    printf("%4d", env_level_ks_map(10 * (m - 1) + n))
     if ((m < 10) || (n < 10))
       printf(", ")
     endif
@@ -141,5 +155,4 @@ for m = 1:10
 endfor
 printf("  };")
 printf("\n\n")
-%}
 

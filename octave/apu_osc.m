@@ -37,9 +37,15 @@ osc_sine_table = round(-256 * (log(sin(2 * pi * ((1:2:511))/2048)) / log(2)));
 db_to_linear_table = round(exp(log(2) * 13) * exp(log(1/2) * (1:256)/256));
 db_to_linear_table = round(4 * floor(db_to_linear_table / 4));
 
+osc_level_zero_block = 13;
+
 % print out tables and constants
 printf("Oscillator Pitch Base Block: \n");
 printf("#define APU_OSC_PITCH_BASE_BLOCK %d\n", osc_pitch_base_block)
+printf("\n")
+
+printf("Oscillator Level Zero Block: \n");
+printf("#define APU_OSC_LEVEL_ZERO_BLOCK %d\n", osc_level_zero_block)
 printf("\n")
 
 printf("Oscillator Pitch Table: \n")
